@@ -1,4 +1,4 @@
-A toolset for [Chaos Engineering](https://www.wikiwand.com/en/Chaos_engineering) RabbitMQ. The name is inspired by [games](https://www.wikiwand.com/en/Raving_Rabbids).
+A toolset for [Chaos Engineering](https://www.wikiwand.com/en/Chaos_engineering) RabbitMQ. The name is inspired by [a game series about crazy rabbits](https://www.wikiwand.com/en/Raving_Rabbids).
 
 Some planned functionalities:
 
