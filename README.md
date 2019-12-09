@@ -21,15 +21,15 @@ The goal can be to trigger high memory alarm (which affects on the whole RabbitM
 
 #### Setup
 
-1. Connect to one of the nodes in the target RabbitMQ cluster, make sure you're in an environment that it's possible to [remote shell](http://erlang.org/doc/man/shell.html#jcl-mode) to the running Erlang node.
+- Connect to one of the nodes in the target RabbitMQ cluster, make sure you're in an environment that it's possible to [remote shell](http://erlang.org/doc/man/shell.html#jcl-mode) to the running Erlang node.
   - Start another node with `erl -hidden` so it does not disrupt other nodes, [see documentation](https://erlang.org/doc/reference_manual/distributed.html#hidden-nodes)
   - Use `-sname` or `-name` depends on how the RabbitMQ node is started, they need to match otherwise they would refuse to cluster
   - Use `-setcookie` to [ensure cookies match](https://erlang.org/doc/reference_manual/distributed.html#security)
-1. Drop the content of `rabbids_mem_attack.erl` to a good location - i.e. a location that is easy to reference/access in the Erlang shell
+- Drop the content of `rabbids_mem_attack.erl` to a good location - i.e. a location that is easy to reference/access in the Erlang shell
   - Use `pwd().` to find out the shell's working directory
-1. Open a remote shell into the running node (typically `Ctrl-G`, then `r 'rabbit@...'` then `c`)
-1. Load the attack module with `c("rabbids_mem_attack").`
-1. Prepare the attack with `rabbids_mem_attack:prepare().`
+- Open a remote shell into the running node (typically `Ctrl-G`, then `r 'rabbit@...'` then `c`)
+- Load the attack module with `c("rabbids_mem_attack").`
+- Prepare the attack with `rabbids_mem_attack:prepare().`
 
 #### Attack
 
