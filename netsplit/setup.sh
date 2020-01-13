@@ -15,39 +15,52 @@ function wait () {
 
 set -ex
 
+# Create bridge networks
 docker network create ab
 docker network create ac
 docker network create bc
 
 # Node a should be in both ab & ac network
-docker run -d --network ab --name nodea \
+docker run -d --name nodea \
   -p "5001:5672" -p "15001:15672" \
   -e RABBITMQ_NODENAME="rabbit@nodea" \
   -e RABBITMQ_ERLANG_COOKIE="netsplit" \
   -v $PWD/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
   $image
 
+docker network connect ab nodea
 docker network connect ac nodea
 
 # Node b should be in both ab & bc network
-docker run -d --network ab --name nodeb \
+docker run -d --name nodeb \
   -p "5002:5672" -p "15002:15672" \
   -e RABBITMQ_NODENAME="rabbit@nodeb" \
   -e RABBITMQ_ERLANG_COOKIE="netsplit" \
   -v $PWD/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
   $image
 
+docker network connect ab nodeb
 docker network connect bc nodeb
 
 # Node c should be in both ac & bc network
-docker run -d --network ac --name nodec \
+docker run -d --name nodec \
   -p "5003:5672" -p "15003:15672" \
   -e RABBITMQ_NODENAME="rabbit@nodec" \
   -e RABBITMQ_ERLANG_COOKIE="netsplit" \
   -v $PWD/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
   $image
 
+docker network connect ac nodec
 docker network connect bc nodec
+
+# Start a load balancer for all amqp ports
+docker run -d --name lb \
+ -p 5000:5000 \
+ --link nodea \
+ --link nodeb \
+ --link nodec \
+ -v $PWD/gobetween.toml:/etc/gobetween/conf/gobetween.toml \
+ yyyar/gobetween
 
 # RabbitMQ need some time to startup
 wait nodea

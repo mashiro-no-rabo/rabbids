@@ -2,6 +2,6 @@
 
 set -x
 
-docker rm -f nodea nodeb nodec
+docker rm -f nodea nodeb nodec lb
 
 docker network rm ab ac bc

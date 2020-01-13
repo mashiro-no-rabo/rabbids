@@ -3,7 +3,7 @@
 This creates a guaranteed netsplit.
 
 The only dependency is `docker`. Make sure all these resources are available for use:
-- Container names: `nodea`, `nodeb` and `nodec`
+- Container names: `nodea`, `nodeb`, `nodec` and `lb`
 - Networks names: `ab`, `ac` and `bc`
 - Ports (on host): 5001 - 5003, 15001 - 15003
 
@@ -18,6 +18,8 @@ The cluster sets up following ports on localhost:
 | nodea | 5001 | 15001 |
 | nodeb | 5002 | 15002 |
 | nodec | 5003 | 15003 |
+
+There's also a load balancer on port `5000` which `roundrobin` between all AMQP ports.
 
 ## Create NetSplit
 

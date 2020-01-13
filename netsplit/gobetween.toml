@@ -1,0 +1,24 @@
+[servers.rabbit]
+bind = "0.0.0.0:5000"
+protocol = "tcp"
+balance = "roundrobin"
+
+max_connections = 10000
+backend_connection_timeout = "1500ms"
+# following current AWS ELB configuration
+client_idle_timeout = "4000s"
+backend_idle_timeout = "4000s"
+
+[servers.rabbit.discovery]
+kind = "static"
+static_list = [
+  "nodea:5672",
+  "nodeb:5672",
+  "nodec:5672",
+]
+
+# following current AWS ELB configuration
+[servers.rabbit.healthcheck]
+kind = "ping"
+interval = "6s"
+ping_timeout_duration = "5s"
