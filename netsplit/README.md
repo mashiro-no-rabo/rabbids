@@ -1,6 +1,6 @@
 # Simulating NetSplit
 
-This creates a guaranteed netsplit.
+The scripts here creates a local RabbitMQ cluster and generate a netsplit on it. This helps to check application behaviours in such scenarios.
 
 The only dependency is `docker`. Make sure all these resources are available for use:
 - Container names: `nodea`, `nodeb`, `nodec` and `lb`
