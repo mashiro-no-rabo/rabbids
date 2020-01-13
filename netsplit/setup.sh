@@ -24,7 +24,7 @@ docker run -d --network ab --name nodea \
   -p "5001:5672" -p "15001:15672" \
   -e RABBITMQ_NODENAME="rabbit@nodea" \
   -e RABBITMQ_ERLANG_COOKIE="netsplit" \
-  -v `pwd`/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
+  -v $PWD/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
   $image
 
 docker network connect ac nodea
@@ -34,7 +34,7 @@ docker run -d --network ab --name nodeb \
   -p "5002:5672" -p "15002:15672" \
   -e RABBITMQ_NODENAME="rabbit@nodeb" \
   -e RABBITMQ_ERLANG_COOKIE="netsplit" \
-  -v `pwd`/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
+  -v $PWD/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
   $image
 
 docker network connect bc nodeb
@@ -44,7 +44,7 @@ docker run -d --network ac --name nodec \
   -p "5003:5672" -p "15003:15672" \
   -e RABBITMQ_NODENAME="rabbit@nodec" \
   -e RABBITMQ_ERLANG_COOKIE="netsplit" \
-  -v `pwd`/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
+  -v $PWD/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
   $image
 
 docker network connect bc nodec
