@@ -1,6 +1,18 @@
 #!/usr/bin/env bash
 
-image=rabbitmq:3.8-alpine
+function start () {
+  local image=rabbitmq:3.8-alpine
+  local node=$1
+  local amqp_port=$2
+  local ui_port=$3
+
+  docker run -d --name $node \
+    -p "$amqp_port:5672" -p "$ui_port:15672" \
+    -e RABBITMQ_NODENAME="rabbit@$node" \
+    -e RABBITMQ_ERLANG_COOKIE="netsplit" \
+    -v $PWD/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
+    $image
+}
 
 function wait () {
   local node=$1
@@ -21,35 +33,17 @@ docker network create ac
 docker network create bc
 
 # Node a should be in both ab & ac network
-docker run -d --name nodea \
-  -p "5001:5672" -p "15001:15672" \
-  -e RABBITMQ_NODENAME="rabbit@nodea" \
-  -e RABBITMQ_ERLANG_COOKIE="netsplit" \
-  -v $PWD/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
-  $image
-
+start nodea 5001 15001
 docker network connect ab nodea
 docker network connect ac nodea
 
 # Node b should be in both ab & bc network
-docker run -d --name nodeb \
-  -p "5002:5672" -p "15002:15672" \
-  -e RABBITMQ_NODENAME="rabbit@nodeb" \
-  -e RABBITMQ_ERLANG_COOKIE="netsplit" \
-  -v $PWD/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
-  $image
-
+start nodeb 5002 15002
 docker network connect ab nodeb
 docker network connect bc nodeb
 
 # Node c should be in both ac & bc network
-docker run -d --name nodec \
-  -p "5003:5672" -p "15003:15672" \
-  -e RABBITMQ_NODENAME="rabbit@nodec" \
-  -e RABBITMQ_ERLANG_COOKIE="netsplit" \
-  -v $PWD/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
-  $image
-
+start nodec 5003 15003
 docker network connect ac nodec
 docker network connect bc nodec
 
