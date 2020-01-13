@@ -9,7 +9,7 @@ The only dependency is `docker`. Make sure all these resources are available for
 
 ## Setup
 
-Run `setup.sh` to start a 3 node cluster, each pair of nodes are connected through a separate [bridge network](https://docs.docker.com/network/bridge/). Currently no [partition handling strategy](https://www.rabbitmq.com/partitions.html#automatic-handling) is defined.
+Run `setup.sh` to start a 3 node cluster, each pair of nodes are connected through a separate [bridge network](https://docs.docker.com/network/bridge/). Currently [partition handling strategy](https://www.rabbitmq.com/partitions.html#automatic-handling) is set to `pause_minority`, which will likely be the one we want to deploy with.
 
 The cluster sets up following ports on localhost:
 
@@ -42,7 +42,11 @@ The other node in the disconnected network would probably just see one error:
 ** Removing (timedout) connection **
 ```
 
-Suppose you see exactly those (minus the timestamp), then `nodea` and `nodec` should still be clustered. But `nodeb` will be running in a separate partition.
+Suppose you see exactly those (minus the timestamp), then `nodea` and `nodec` should still be clustered. And `nodeb` should be stopped (even management UI is offline).
+
+## Recover
+
+Run `unsplit.sh` to reconnect network between `nodeb` and `nodec`.
 
 ## Cleanup
 
