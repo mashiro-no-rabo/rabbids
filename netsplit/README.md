@@ -5,7 +5,7 @@ This creates a guaranteed netsplit.
 The only dependency is `docker`. Make sure all these resources are available for use:
 - Container names: `nodea`, `nodeb` and `nodec`
 - Networks names: `ab`, `ac` and `bc`
-- Ports: 5001 - 5003, 15001 - 15003
+- Ports (on host): 5001 - 5003, 15001 - 15003
 
 ## Setup
 
