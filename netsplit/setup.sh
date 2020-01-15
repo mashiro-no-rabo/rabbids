@@ -6,18 +6,18 @@ function start () {
   local amqp_port=$2
   local ui_port=$3
 
-  docker run -d --name $node \
+  docker run -d --name "$node" \
     -p "$amqp_port:5672" -p "$ui_port:15672" \
     -e RABBITMQ_NODENAME="rabbit@$node" \
     -e RABBITMQ_ERLANG_COOKIE="netsplit" \
-    -v $PWD/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
+    -v "$PWD"/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf \
     $image
 }
 
 function wait () {
   local node=$1
 
-  while ! docker exec $node rabbitmqctl status &>/dev/null
+  while ! docker exec "$node" rabbitmqctl status &>/dev/null
   do
     echo "Waiting for $node"
     sleep 5s
@@ -53,7 +53,7 @@ docker run -d --name lb \
  --link nodea \
  --link nodeb \
  --link nodec \
- -v $PWD/gobetween.toml:/etc/gobetween/conf/gobetween.toml \
+ -v "$PWD"/gobetween.toml:/etc/gobetween/conf/gobetween.toml \
  yyyar/gobetween
 
 # RabbitMQ need some time to startup
