@@ -1,0 +1,16 @@
+* TUI features
+** TODO Start RabbitMQ containers and configure clustering
+n => start new node
+** TODO Start gobetween and consul containers and configure discovery
+maybe: N => start new node without putting into LB rotation?
+** TODO Toggle RabbitMQ container in/out LB rotation
+l => toggle
+** MAYBE Visualization for network links
+
+* CI testing support
+** Chaos scenarios
+*** TODO Memory alarm
+*** TODO Netsplit
+*** TODO Node/cluster cycle
+** TODO Send message
+** TODO Expect message
