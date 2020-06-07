@@ -1,7 +1,5 @@
 use anyhow::{bail, Context, Result};
-use crossbeam::channel::unbounded;
 use crossterm::{
-  event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEvent},
   execute,
   terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
@@ -9,7 +7,6 @@ use log::trace;
 use std::{
   io::{stdout, Write},
   process::Command,
-  thread,
   time::Duration,
 };
 use structopt::StructOpt;
@@ -19,6 +16,9 @@ use tui::{
   widgets::{Block, Borders},
   Terminal,
 };
+
+mod input;
+use input::*;
 
 #[derive(Debug, StructOpt)]
 #[structopt(about = env!("CARGO_PKG_DESCRIPTION"))]
@@ -64,7 +64,7 @@ fn main() -> Result<()> {
   trace!("setting up terminal");
   enable_raw_mode()?;
   let mut stdout = stdout();
-  execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
+  execute!(stdout, EnterAlternateScreen)?;
   let backend = CrosstermBackend::new(stdout);
   let mut terminal = Terminal::new(backend)?;
   terminal.hide_cursor()?;
@@ -73,15 +73,7 @@ fn main() -> Result<()> {
 
   // Setup input handling
   trace!("setting up input handling");
-  let (input_s, input_r) = unbounded();
-
-  thread::spawn(move || loop {
-    if event::poll(Duration::from_millis(100)).unwrap() {
-      if let Event::Key(key) = event::read().unwrap() {
-        input_s.send(key).unwrap();
-      }
-    }
-  });
+  let input = setup_input();
   trace!("input handling ready");
 
   trace!("starting tui loop");
@@ -92,19 +84,19 @@ fn main() -> Result<()> {
         .constraints([Constraint::Min(0), Constraint::Length(3)].as_ref())
         .split(f.size());
 
-      let block = Block::default().title("Block").borders(Borders::ALL);
+      let block = Block::default().title(" Nodes ").borders(Borders::ALL);
       f.render_widget(block, chunks[0]);
       let block = Block::default().title(" Help ").borders(Borders::ALL);
       f.render_widget(block, chunks[1]);
     })?;
 
-    match input_r.recv_timeout(Duration::from_millis(200)) {
-      Ok(KeyEvent {
-        code: KeyCode::Char('q'),
-        modifiers: _,
-      }) => {
+    static RECV_TIMEOUT: Duration = Duration::from_millis(200);
+
+    match input.recv_timeout(RECV_TIMEOUT) {
+      Ok(Action::NewNode) => {}
+      Ok(Action::Quit) => {
         disable_raw_mode()?;
-        execute!(terminal.backend_mut(), LeaveAlternateScreen, DisableMouseCapture)?;
+        execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
         terminal.show_cursor()?;
         break;
       }
