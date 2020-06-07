@@ -1,4 +1,5 @@
 use anyhow::{bail, Context, Result};
+use crossbeam::channel::unbounded;
 use crossterm::{
   event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEvent},
   execute,
@@ -8,9 +9,8 @@ use log::trace;
 use std::{
   io::{stdout, Write},
   process::Command,
-  sync::mpsc,
   thread,
-  time::{Duration, Instant},
+  time::Duration,
 };
 use structopt::StructOpt;
 use tui::{
@@ -73,12 +73,12 @@ fn main() -> Result<()> {
 
   // Setup input handling
   trace!("setting up input handling");
-  let (tx, rx) = mpsc::channel();
+  let (input_s, input_r) = unbounded();
 
   thread::spawn(move || loop {
     if event::poll(Duration::from_millis(100)).unwrap() {
       if let Event::Key(key) = event::read().unwrap() {
-        tx.send(key).unwrap();
+        input_s.send(key).unwrap();
       }
     }
   });
@@ -98,13 +98,17 @@ fn main() -> Result<()> {
       f.render_widget(block, chunks[1]);
     })?;
 
-    match rx.recv()? {
-      _ => {
+    match input_r.recv_timeout(Duration::from_millis(200)) {
+      Ok(KeyEvent {
+        code: KeyCode::Char('q'),
+        modifiers: _,
+      }) => {
         disable_raw_mode()?;
         execute!(terminal.backend_mut(), LeaveAlternateScreen, DisableMouseCapture)?;
         terminal.show_cursor()?;
         break;
       }
+      _ => {}
     }
   }
 
