@@ -1,13 +1,17 @@
-* TUI features
+* Interactive features
 ** TODO Start RabbitMQ containers and configure clustering
 n => start new node
 ** TODO Start gobetween and consul containers and configure discovery
 maybe: N => start new node without putting into LB rotation?
 ** TODO Toggle RabbitMQ container in/out LB rotation
 l => toggle
+** TODO Clean start
 ** MAYBE Visualization for network links
 
 * CI testing support
+Potential strategy:
+1. deploy a binary to run on host
+2. bundle all containers into one - gobetween and consul should be single binary?
 ** Chaos scenarios
 *** TODO Memory alarm
 *** TODO Netsplit
