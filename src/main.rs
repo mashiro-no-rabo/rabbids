@@ -1,4 +1,4 @@
-use anyhow::{bail, Context, Result};
+use anyhow::Result;
 use crossterm::{
   execute,
   terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
@@ -6,7 +6,6 @@ use crossterm::{
 use log::trace;
 use std::{
   io::{stdout, Write},
-  process::Command,
   time::Duration,
 };
 use structopt::StructOpt;
@@ -19,6 +18,7 @@ use tui::{
 
 mod input;
 use input::*;
+mod docker;
 
 #[derive(Debug, StructOpt)]
 #[structopt(about = env!("CARGO_PKG_DESCRIPTION"))]
@@ -50,15 +50,13 @@ fn main() -> Result<()> {
   trace!("opts parsed #{:?}", &opt);
 
   // test docker is running
-  trace!("testing docker");
-  let docker_output = Command::new("docker")
-    .args(&["version"])
-    .output()
-    .context("failed to run `docker version`")?;
-  if !docker_output.status.success() {
-    bail!("Docker is not fully running.");
-  }
-  trace!("docker version succeed");
+  docker::ensure_running()?;
+
+  // pull containers
+  docker::pull_image(&opt.consul)?;
+  docker::pull_image(&opt.gobetween)?;
+  docker::pull_image(&opt.rabbitmq)?;
+  trace!("images pulled");
 
   // setup terminal
   trace!("setting up terminal");
