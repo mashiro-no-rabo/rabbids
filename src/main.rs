@@ -79,13 +79,15 @@ fn main() -> Result<()> {
     terminal.draw(|mut f| {
       let chunks = Layout::default()
         .direction(Direction::Vertical)
-        .constraints([Constraint::Min(0), Constraint::Length(3)].as_ref())
+        .constraints([Constraint::Length(3), Constraint::Min(5), Constraint::Length(3)].as_ref())
         .split(f.size());
 
-      let block = Block::default().title(" Nodes ").borders(Borders::ALL);
+      let block = Block::default().title(" Load Balancer ").borders(Borders::ALL);
       f.render_widget(block, chunks[0]);
-      let block = Block::default().title(" Help ").borders(Borders::ALL);
+      let block = Block::default().title(" Nodes ").borders(Borders::ALL);
       f.render_widget(block, chunks[1]);
+      let block = Block::default().title(" Help ").borders(Borders::ALL);
+      f.render_widget(block, chunks[2]);
     })?;
 
     static RECV_TIMEOUT: Duration = Duration::from_millis(200);
